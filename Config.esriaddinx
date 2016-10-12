@@ -1,0 +1,38 @@
+﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Control Network Processing</Name>
+  <AddInID>{71cccd5a-b3a2-4af3-ad07-30bfa961e532}</AddInID>
+  <Description>Application for processing the survey control network used by the Grand Canyon Monitoring and Researching Center.</Description>
+  <Version>1.0</Version>
+  <Image>Images\control-network-processing.png</Image>
+  <Author>jhensleigh</Author>
+  <Company>USGS</Company>
+  <Date>10/7/2016</Date>
+  <Targets>
+    <Target name="Desktop" version="10.3" />
+  </Targets>
+  <AddIn language="CLR4.0" library="control-network-processing.dll" namespace="control_network_processing">
+    <ArcMap>
+      
+      <Commands>
+        <Button id="btn_main" class="cmdMain" message="This is the main button" caption="Main Button" tip="Hello world!" category="AddIn" image="Images\cmdMain.png" />
+      </Commands>
+      
+      <Menus>
+        <Menu caption="Control Network Processing" isRootMenu="true" id="main_menu">
+          <Items>
+            <Button refID="btn_main"/>
+          </Items>
+        </Menu>
+      </Menus>
+      
+      <Toolbars>
+        <Toolbar caption="Control Network Processing" showInitially="true" id="control_network_processing_toolbar">
+          <Items>
+            <Menu refID="main_menu"/>
+          </Items>
+        </Toolbar>
+       </Toolbars>
+      
+    </ArcMap>
+  </AddIn>
+</ESRI.Configuration>
