@@ -55,7 +55,6 @@ namespace control_network_processing
                 if (_dOrganizedRecords.Keys.Contains("Observed Coordinates") && _dSurveyProperties.Keys.Contains("Separator") && _dSurveyProperties.Keys.Contains("MissingValue"))
                 {
                     //TODO
-                    string dummy = "dummy";
                 }
                 if (_dOrganizedRecords.Keys.Contains("GPS") && _dSurveyProperties.Keys.Contains("Separator") && _dSurveyProperties.Keys.Contains("MissingValue"))
                 {
@@ -67,7 +66,8 @@ namespace control_network_processing
                 {
                     _lTerrestrialObservations = ProcessTerrestrialRecords(_dOrganizedRecords["Terrestrial"],
                                                                           _dSurveyProperties["Separator"],
-                                                                          _dSurveyProperties["MissingValue"]);
+                                                                          _dSurveyProperties["MissingValue"],
+                                                                          _dStations);
                 }
             }
                 
@@ -79,12 +79,13 @@ namespace control_network_processing
             General
         }
         
-        enum CoordinateType
+        public enum CoordinateType
         {
             Station,
             GridCoord,
             LLCoord,
             Vector,
+            GPS,
             TerrObs
         }
 
@@ -93,7 +94,7 @@ namespace control_network_processing
         public  List<SideShot> TerrestrialObservations { get { return _lTerrestrialObservations; } }
         
         private Dictionary<string, List<List<string>>> OrganizeDataWithHeaders(string sRecords,
-                                                                              string sSeparator)
+                                                                               string sSeparator)
         {
             Dictionary<string, List<List<string>>> dHeadersWithData = new Dictionary<string, List<List<string>>> { };
             List<string> lHeaders = GetHeaderDataNames(sRecords);
@@ -118,7 +119,7 @@ namespace control_network_processing
         }
 
         private List<List<string>> GetOrganizedRecords(string sRecords,
-                                                                string sSeparator)
+                                                       string sSeparator)
         {
             List<string> lRecordLines = sRecords.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).ToList();
             List<List<string>> lOrganizedRecords = (from record in lRecordLines select record.Trim().Split(new string[] { sSeparator }, StringSplitOptions.None).ToList()).ToList();
@@ -226,6 +227,7 @@ namespace control_network_processing
                                                                            string sRecordsSeparator,
                                                                            string sMissingValue)
         {
+            DeleteAllRecordsFromTable("StagingStations");
             Dictionary<string, Point> dKeyedInStations = new Dictionary<string,Point> {};
             foreach (List<string> lRecord in lStationRecords)
             {
@@ -234,7 +236,7 @@ namespace control_network_processing
 
                 if (String.Compare(sRecordType, CoordinateType.GridCoord.ToString()) == 0)
                 {
-                    System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
+                    //System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
                     string sPointName = lRecordInformation[2];
 
                     //check for missing northing, easting
@@ -265,6 +267,7 @@ namespace control_network_processing
                             dLatitude,
                             dElevation);
                         dKeyedInStations[sPointName] = pGridCoord;
+                        Point.StagePoint(pGridCoord);
                     }
                     else
                     {
@@ -273,7 +276,7 @@ namespace control_network_processing
                 }
                 else if (String.Compare(sRecordType, CoordinateType.LLCoord.ToString()) == 0)
                 {
-                    System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
+                   // System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
                     string sPointName = lRecordInformation[2];
                     double? dLatitude = (DetermineWGS_84_Sign(RegularExpressions.GetAlphaCharacters(lRecordInformation[3])) * RegularExpressions.GetSignDigitsAndDecimal(lRecordInformation[3], sMissingValue));
                     double? dLongitude = (DetermineWGS_84_Sign(RegularExpressions.GetAlphaCharacters(lRecordInformation[4])) * RegularExpressions.GetSignDigitsAndDecimal(lRecordInformation[4], sMissingValue));
@@ -295,6 +298,7 @@ namespace control_network_processing
                                                     dLatitude,
                                                     dElevation);
                         dKeyedInStations[sPointName] = pLL_Coord;
+                        Point.StagePoint(pLL_Coord);
                     }
                     else
                     {
@@ -305,10 +309,24 @@ namespace control_network_processing
             return dKeyedInStations;
         }
 
+        private void DeleteAllRecordsFromTable(string sTableName)
+        {
+            string sStatement = String.Format(@"TRUNCATE TABLE dbo.{0}", sTableName);
+            using (System.Data.SqlClient.SqlConnection dbConn = new System.Data.SqlClient.SqlConnection(Logging.sDB_Connection))//TODO:remove this constant
+            {
+                using (System.Data.SqlClient.SqlCommand dbCommand = new System.Data.SqlClient.SqlCommand(sStatement, dbConn))
+                {
+                    dbConn.Open();
+                    int iResult = dbCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
         private List<GPS_Observation> ProcessGPS_Records(List<List<string>> lGPS_Records,
                                                          string sRecordsSeparator,
                                                          string sMissingValue)
         {
+            DeleteAllRecordsFromTable("StagingGPS_Vectors");
             List<GPS_Observation> lGPS_Observations = new List<GPS_Observation> { };
             foreach (List<string> lRecord in lGPS_Records)
             {
@@ -317,7 +335,7 @@ namespace control_network_processing
 
                 if (String.Compare(sRecordType, CoordinateType.Vector.ToString()) == 0)
                 {
-                    System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
+                    //System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
                     string sFromStation = lRecordInformation[2];
                     string sToStation = lRecordInformation[3];
                     double dECEF_dx = Convert.ToDouble(lRecordInformation[4]);
@@ -360,6 +378,7 @@ namespace control_network_processing
                                                                        dtStart,
                                                                        dtEnd);
                     lGPS_Observations.Add(pObservation);
+                    GPS_Observation.StageGPS_Vector(pObservation);
                 }
             }
 
@@ -367,8 +386,9 @@ namespace control_network_processing
         }
 
         private List<SideShot> ProcessTerrestrialRecords(List<List<string>> lGPS_Records,
-                                                                string sRecordsSeparator,
-                                                                string sMissingValue)
+                                                         string sRecordsSeparator,
+                                                         string sMissingValue,
+                                                         Dictionary<string, Point> dStations)
         {
             List<SideShot> lTerrestrialObservations = new List<SideShot> { };
             foreach (List<string> lRecord in lGPS_Records)
@@ -378,8 +398,8 @@ namespace control_network_processing
 
                 if (String.Compare(sRecordType, CoordinateType.TerrObs.ToString()) == 0)
                 {
-                    //TODO: hangle null values
-                    System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
+                    //TODO: handle null values
+                    //System.Diagnostics.Debug.Print(String.Format("{0} : {1}", sRecordType, (String.Join(" : ", lRecordInformation))));
                     string sInstrumentPoint = lRecordInformation[2];
                     string sBacksightPoint = lRecordInformation[3];
                     string sForesightPoint = lRecordInformation[4];
@@ -405,7 +425,9 @@ namespace control_network_processing
                                                       dInstrumentHeight,
                                                       dTargetHeight,
                                                       sMissingValue);
-
+                    
+                    pSideShot.GetPointInformation(dStations);
+                    Point.StagePoint(pSideShot.Point);
                     lTerrestrialObservations.Add(pSideShot);
                 }
             }
@@ -454,6 +476,98 @@ namespace control_network_processing
 
             }            
             return iDuplicates;
+        }
+
+        public enum ControlNetworkLevel
+        {
+            Primary,
+            Secondary,
+            Tertiary,
+            Unknown
+        }
+
+        public static ControlNetworkLevel GetControlLevelNetwork(string sPointName)
+        {
+            ControlNetworkLevel eControlNetworkLevel = ControlNetworkLevel.Unknown;
+            if (String.IsNullOrEmpty(sPointName) == false)
+            {
+                if (sPointName.Length >= 2)
+                {
+                    string sControlLevelCharacter = sPointName.Substring(1, 1);
+
+                    switch (sControlLevelCharacter.ToUpper())
+                    {
+                        case "P":
+                            eControlNetworkLevel = ControlNetworkLevel.Primary;
+                            break;
+                        case "S":
+                            eControlNetworkLevel = ControlNetworkLevel.Secondary;
+                            break;
+                        case "T":
+                            eControlNetworkLevel = ControlNetworkLevel.Tertiary;
+                            break;
+                        default:
+                            //throw new Exception("cannot classify control level network of point");
+                            Logging.InsertToOddPointsDB(sPointName);
+                            break;
+                    }
+                }
+            }
+            return eControlNetworkLevel;
+        }
+
+        public List<SideShot> SummarizeRiverSection(Tuple<int, int> tRiverMile)
+        {
+            List<SideShot> lInRiverSection = new List<SideShot> ();
+            foreach (SideShot pObservation in this._lTerrestrialObservations)
+            {
+                if (pObservation.Point.RiverMile >= tRiverMile.Item1 && pObservation.Point.RiverMile <= tRiverMile.Item2)
+                {
+                    lInRiverSection.Add(pObservation);
+                }
+            }
+            return lInRiverSection;
+        }
+
+        public List<GPS_Observation> SummarizeRiverSection(Tuple<int, int> tRiverMile,
+                                                           Dictionary<string, Point> dStations)
+        {
+            List<GPS_Observation> lInRiverSection = new List<GPS_Observation>();
+            foreach (GPS_Observation pObservation in this._lGPSObservations)
+            {
+                Tuple<double, double> tObservationRiverMiles = pObservation.GetRiverMiles(dStations);
+                if ((tObservationRiverMiles.Item1 >= tRiverMile.Item1 && tObservationRiverMiles.Item1 <= tRiverMile.Item2) &&
+                    (tObservationRiverMiles.Item2 >= tRiverMile.Item1 && tObservationRiverMiles.Item2 <= tRiverMile.Item2))
+                {
+                    lInRiverSection.Add(pObservation);
+                }
+            }
+            return lInRiverSection;
+        }
+
+
+        private int GetRecordCountInRiverMile(string sTableName, Tuple<int, int> tRiverMile)
+        {
+            int iRecord = 0;
+            string sStatement = String.Format(@"SELECT *
+                                                FROM dbo.{0}
+                                                WHERE RiverMile > {1} AND RiverMile < {2}", sTableName, tRiverMile.Item1, tRiverMile.Item2);
+            using (System.Data.SqlClient.SqlConnection dbConn = new System.Data.SqlClient.SqlConnection(Logging.sDB_Connection))//TODO:Get rid of this hard coded path
+            {
+                using (System.Data.SqlClient.SqlCommand dbCommand = new System.Data.SqlClient.SqlCommand(sStatement, dbConn))
+                {
+                    dbConn.Open();
+                    System.Data.SqlClient.SqlDataReader dbReader = dbCommand.ExecuteReader();
+                    if (dbReader.HasRows == true)
+                    {
+                        while (dbReader.Read())
+                        {
+                            iRecord += 1;
+                        }
+                    }
+                }
+            }
+            return iRecord;
         }
 
     }

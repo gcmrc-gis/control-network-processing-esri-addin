@@ -117,4 +117,59 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="colRiverSection.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colGPSObservations.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colGPS_Duplicates.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colTerrestrialObservations.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colTerrestrialDuplicates.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colProcess.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnOpenSurveyFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA////////
+        ////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////dYSPZoCPYHmHV257TmJvRFZhOUhSLjpDJS41GyIp
+        FBkeDhIWDhMY////////////d4eSiaGrarLUAI/NAI/NAI/NBIzHCIi+D4K0FXypG3efH3KWIktcorO3
+        ////////eoqVfr7TiqSuftz/X8//Vcv/TMT6Qbz1N7PwLqrrJKDlE4zUI2eAU2Jn////////fY6YedLs
+        i6SticLOcdj/ZdP/XM7/Ucn+ScH6P7n1NLDuKajpEIXNIktbucvQ////gJGcgdfvfcXgjKawgN3+aNP/
+        Z9T/YtH/WM3/Tsf8Rr73O7byMazsJWmBaYyZ////g5WfidzxjOL/jaixjLrHdNj/Z9T/Z9T/Z9T/X9D/
+        VM3/S8X8Qbv3LqLbT2ZzwdLXhpqjkuHymOj9gMTejqewgd79hOD/hOD/hOD/hOD/gd//e93/dNj/a9b/
+        VqnRgJOdiJylmubzn+v7mOj+i6y5i6y5iqq3iKazhqOvg5+qgZqmf5WhfJGdeo6ZeYuVd4iTi6CooOr2
+        pu75n+v7mOj+etr/Z9T/Z9T/Z9T/Z9T/Z9T/Z9T/d4iT////////////jqKrp+72q/D3pu75n+v7mOj9
+        cdT7iZ6nhpmjgpSffpCaeoyXd4iT////////////j6SsoNLaq/D3q/D3pu75n+v7jaGqrcbN////////
+        ////////////jmpTkWhPk2dMv9HWj6Ssj6Ssj6Ssj6Ssj6SsrMbO////////////////////////xcjF
+        jWtUkGlP////////////////////////////////////lXRgvbu1////0+DippGCxcfElHRf////////
+        ////////////////////////////ytPRppGBoYl4qpWHvby1////////
+</value>
+  </data>
+  <data name="btnInpectPoints.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAAASCwAAEgsAAAAAAAAAAAAA////////
+        ////////////////////t6KTY0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k1////////////////////////
+        ////t6KT/fj26eXi4tnU4tbP1cW60butz7SjY0k1////////////////////////////vqma////////
+        ///////////+/vz8y7uwY0k1////////////02YwxmArt1goqFElyLKj////sZaHkXhq/v7+sZaHkXhq
+        4dXOY0k1////////////3G00////////////zLan///////////////////+/vz8+erjY0k1////////
+        ////43Q7////////////6qmL/8Ki/7yZ/7WM/6t+/6Fw/5hi9o5Y2Goy////////////6HtF////////
+        ////6qqL6aiJ6qN+6ptz6pFl6ohW6X9K5XY+3282////////////6oRQ////////////////////////
+        ////////////////////////////////////6o1c////////////////////////////////////////
+        ////////t6KTY0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k1////////////////////////////t6KT/fj2
+        6eXi4tnU4tbP1cW60butz7SjY0k1////////////////////////////vqma///////////////////+
+        /vz8y7uwY0k1////////////////////////////yLKj////sZaHkXhq/v7+sZaHkXhq4dXOY0k1////
+        ////////////////////////zLan///////////////////+/vz8+erjY0k1////////////////////
+        ////////6qmL/8Ki/7yZ/7WM/6t+/6Fw/5hi9o5Y2Goy////////////////////////////6qqL6aiJ
+        6qN+6ptz6pFl6ohW6X9K5XY+3282////////////////////////////
+</value>
+  </data>
 </root>

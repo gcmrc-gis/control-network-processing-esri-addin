@@ -5,9 +5,9 @@ using System.IO;
 
 namespace control_network_processing
 {
-    public class cmdMain : ESRI.ArcGIS.Desktop.AddIns.Button
+    public class cmdHardPoints : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public cmdMain()
+        public cmdHardPoints()
         {
         }
 
@@ -19,9 +19,8 @@ namespace control_network_processing
             ArcMap.Application.CurrentTool = null;
             try
             {
-                frmControlNetworkProcessing frm = new frmControlNetworkProcessing();
-                frm.ShowDialog();
-            }    
+                
+            }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Print(String.Format("Error: {0}", ex.Message));

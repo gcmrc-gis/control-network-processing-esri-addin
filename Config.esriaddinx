@@ -15,12 +15,14 @@
       
       <Commands>
         <Button id="btn_main" class="cmdMain" message="This is the main button" caption="Main Button" tip="Hello world!" category="AddIn" image="Images\cmdMain.png" />
+        <Button id="btn_hard_points" class="cmdHardPoints" message="This is the hard points button" caption="Hard Points Button" tip="Hello Hard Points!" category="AddIn" image="Images\cmdMain.png" />
       </Commands>
       
       <Menus>
         <Menu caption="Control Network Processing" isRootMenu="true" id="main_menu">
           <Items>
             <Button refID="btn_main"/>
+            <Button refID="btn_hard_points"/>
           </Items>
         </Menu>
       </Menus>

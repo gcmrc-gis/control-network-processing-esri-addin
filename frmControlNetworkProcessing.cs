@@ -16,12 +16,6 @@ namespace control_network_processing
         public frmControlNetworkProcessing()
         {
             InitializeComponent();
-
-            foreach (Tuple<int, int> tRiverMile in Definitions.lTraverseRiverMiles)
-            {
-                cblTraverseRiverMiles.Items.Add(String.Format("RM: {0} to {1} : O Points", tRiverMile.Item1, tRiverMile.Item2));
-            }
-
         }
 
         private void btnOpenSurveyFile_Click(object sender, EventArgs e)
@@ -30,6 +24,9 @@ namespace control_network_processing
             pFileDialog.Filter = "asc files (*.asc)|*.asc|All files (*.*)|*.*";
             pFileDialog.InitialDirectory = @"U:\projects\survey\control-network\data\raw";
             DialogResult pResult = pFileDialog.ShowDialog();
+
+            Cursor.Current = Cursors.WaitCursor;
+
             if (pResult == DialogResult.OK)
             {
                 string sFilePath = pFileDialog.FileName;
@@ -38,18 +35,30 @@ namespace control_network_processing
                     txtSurveyFile.Text = sFilePath;
                     _Survey = new Survey(sFilePath, "");
 
-                    //TODO: show things to the user
-                    int iGPS_Duplicates = _Survey.FindDuplicates(_Survey.GPS_Observations);
-                    int iTerrestrialDuplicates = _Survey.FindDuplicates(_Survey.TerrestrialObservations);
-                    lblStations.Text = String.Format("Stations: {0}", _Survey.Stations.Keys.Count);
-                    lblGPS_Observations.Text = String.Format("GPS Observations: {0} with {1} duplicates", _Survey.GPS_Observations.Count, iGPS_Duplicates);
-                    lblTerrestrialObservations.Text = String.Format("Terrestrial Observations: {0} with {1} duplicates", _Survey.TerrestrialObservations.Count, iTerrestrialDuplicates);
-
                     //TODO:spatial filters
+                    dgvRiverSections.Rows.Clear();
+
+                    foreach (Tuple<int, int> tRiverMile in Definitions.lTraverseRiverMiles)
+                    {
+                        List<SideShot> lTerrestrialObservations = _Survey.SummarizeRiverSection(tRiverMile);
+                        int iTerrestrialDuplicates = _Survey.FindDuplicates(lTerrestrialObservations);
+                        List<GPS_Observation> lGPS_Observations = _Survey.SummarizeRiverSection(tRiverMile,
+                                                                                                _Survey.Stations);
+
+                        int iGPSDuplicates = _Survey.FindDuplicates(lGPS_Observations);
+                        dgvRiverSections.Rows.Add(String.Format("RM: {0} to {1}", tRiverMile.Item1, tRiverMile.Item2),
+                                                    lGPS_Observations.Count,
+                                                    iGPSDuplicates,
+                                                    lTerrestrialObservations.Count,
+                                                    iTerrestrialDuplicates,
+                                                    false);
+                    }
+
                     //TODO: push down all of the network type, observation type, etc. currently done when creating a GIS object
                     //and make that a method for Sideshot and GPS_Observation
                 }
             }
+            Cursor.Current = Cursors.Default;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -60,7 +69,7 @@ namespace control_network_processing
                 string sTrimbleFilePath = txtSurveyFile.Text;
                 if (System.IO.File.Exists(sTrimbleFilePath))
                 {
-                    
+
                 }
             }
             else
@@ -84,8 +93,46 @@ namespace control_network_processing
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Print(String.Format("ERROR: {0}", ex.Message));
-                string sDummy = "dummy";
             }
         }
+
+        private void dgvRiverSections_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 5)
+            {
+                if (dgvRiverSections.Rows.Count > 0)
+                {
+                    if (dgvRiverSections.CurrentCell.RowIndex >= 0)
+                    {
+                        if ((bool)dgvRiverSections.Rows[dgvRiverSections.CurrentCell.RowIndex].Cells[5].Value == true)
+                        {
+                            dgvRiverSections.Rows[dgvRiverSections.CurrentCell.RowIndex].Cells[5].Value = false;
+                        }
+                        else if ((bool)dgvRiverSections.Rows[dgvRiverSections.CurrentCell.RowIndex].Cells[5].Value == false)
+                        {
+                            dgvRiverSections.Rows[dgvRiverSections.CurrentCell.RowIndex].Cells[5].Value = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        //private void cmbRiverSection_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if(cmbRiverSection.SelectedIndex != -1)
+        //    {
+        //        ComboBoxItem cbItem = (ComboBoxItem)cmbRiverSection.SelectedItem;
+        //        List<SideShot> lTerrestrialObservations = _Survey.SummarizeRiverSection((Tuple<int, int>)cbItem.Value);
+        //        int iDuplicates = _Survey.FindDuplicates(lTerrestrialObservations);
+
+        //        lblTerrestrialObservations.Text = String.Format("Terrestrial Observations: {0} with {1} duplicates", lTerrestrialObservations.Count, iDuplicates);
+
+        //        List<GPS_Observation> lGPS_Observations = _Survey.SummarizeRiverSection((Tuple<int, int>)cbItem.Value,
+        //                                                                                 _Survey.Stations);
+
+        //        iDuplicates = _Survey.FindDuplicates(lGPS_Observations);
+        //        lblGPS_Observations.Text = String.Format("GPS Observations: {0} with {1} duplicates", lGPS_Observations.Count, iDuplicates);
+        //    }
+        //}
     }
 }
